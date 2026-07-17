@@ -1,181 +1,37 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบันทึกรายรับ-รายจ่าย ตู้กดขนม</title>
-    
-    <!-- นำเข้าฟอนต์ภาษาไทย 'Prompt' -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- นำเข้า Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- นำเข้า SweetAlert2 สำหรับ Pop-up -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <style>
-        body {
-            font-family: 'Prompt', sans-serif;
-            background-color: #f0f2f5;
-        }
-        .form-container {
-            max-width: 600px;
-            margin: 40px auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-        }
-        .app-title {
-            color: #2c3e50;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .btn-submit {
-            background-color: #4CAF50;
-            border: none;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: 500;
-            width: 100%;
-            border-radius: 8px;
-        }
-        .btn-submit:hover {
-            background-color: #45a049;
-        }
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-    </style>
+    <style>body{padding:20px; background:#f4f7f6; font-family: sans-serif;}</style>
 </head>
 <body>
-
-    <div class="container">
-        <div class="form-container">
-            <h2 class="app-title">🏪 บันทึกรายรับ-รายจ่าย ตู้กดขนม</h2>
-            
-            <form id="vendingForm">
-                
-                <!-- 1. วันที่และเวลา -->
-                <div class="mb-3">
-                    <label for="dateTime" class="form-label">วันที่และเวลา</label>
-                    <input type="datetime-local" class="form-control" id="dateTime" name="Date_Time" required>
-                </div>
-
-                <!-- 2. รหัสตู้ -->
-                <div class="mb-3">
-                    <label for="machineId" class="form-label">รหัสตู้ (Machine ID)</label>
-                    <input type="text" class="form-control" id="machineId" name="Machine_ID" placeholder="เช่น VM-001" required>
-                </div>
-
-                <!-- 3. ประเภทรายการ -->
-                <div class="mb-3">
-                    <label for="transactionType" class="form-label">ประเภทรายการ</label>
-                    <select class="form-select" id="transactionType" name="Transaction_Type" required>
-                        <option value="" selected disabled>-- เลือกประเภท --</option>
-                        <option value="รายรับ">รายรับ (เงินเข้า)</option>
-                        <option value="รายจ่าย">รายจ่าย (เงินออก)</option>
-                    </select>
-                </div>
-
-                <!-- 4. รายละเอียด (เพิ่มตัวเลือก โค้ก และ ขนมฟันโอ) -->
-                <div class="mb-3">
-                    <label for="description" class="form-label">รายละเอียด (เลือกจากรายการ หรือพิมพ์เอง)</label>
-                    <!-- ใช้ list="itemOptions" เพื่อเชื่อมกับแท็ก datalist ด้านล่าง -->
-                    <input list="itemOptions" class="form-control" id="description" name="Description" placeholder="เช่น โค้ก, ขนมฟันโอ, จ่ายค่าไฟ" required>
-                    
-                    <!-- ส่วนของ DataList ที่เก็บตัวเลือกสินค้า -->
-                    <datalist id="itemOptions">
-                        <option value="โค้ก">
-                        <option value="ขนมฟันโอ">
-                        <option value="น้ำเปล่า">
-                        <option value="จ่ายค่าไฟ">
-                    </datalist>
-                </div>
-
-                <!-- 5. จำนวนเงิน -->
-                <div class="mb-3">
-                    <label for="amount" class="form-label">จำนวนเงิน (บาท)</label>
-                    <input type="number" step="0.01" class="form-control" id="amount" name="Amount" placeholder="0.00" required>
-                </div>
-
-                <!-- 6. หมายเหตุ -->
-                <div class="mb-4">
-                    <label for="notes" class="form-label">หมายเหตุ (ถ้ามี)</label>
-                    <textarea class="form-control" id="notes" name="Notes" rows="2" placeholder="ข้อมูลเพิ่มเติม..."></textarea>
-                </div>
-
-                <!-- ปุ่มกดส่งข้อมูล -->
-                <button type="submit" class="btn btn-primary btn-submit" id="submitBtn">💾 บันทึกข้อมูล</button>
-                
-            </form>
-        </div>
+    <div class="container" style="max-width:600px; background:#fff; padding:30px; border-radius:10px;">
+        <h3 class="text-center">ตู้กดขนมอัตโนมัติ</h3>
+        <form id="myForm">
+            <input type="datetime-local" class="form-control mb-2" id="dt" name="Date_Time" required>
+            <input type="text" class="form-control mb-2" name="Machine_ID" placeholder="รหัสตู้ (เช่น VM-001)" required>
+            <select class="form-select mb-2" name="Transaction_Type" required>
+                <option value="รายรับ">รายรับ</option><option value="รายจ่าย">รายจ่าย</option>
+            </select>
+            <input list="items" class="form-control mb-2" name="Description" placeholder="รายละเอียด (เช่น โค้ก, ฟันโอ)" required>
+            <datalist id="items"><option value="โค้ก"><option value="ขนมฟันโอ"></datalist>
+            <input type="number" class="form-control mb-2" name="Amount" placeholder="จำนวนเงิน" required>
+            <textarea class="form-control mb-3" name="Notes" placeholder="หมายเหตุ"></textarea>
+            <button type="submit" class="btn btn-success w-100" id="btn">บันทึก</button>
+        </form>
     </div>
-
     <script>
-        // URL Google Apps Script ของคุณ
-        const SCRIPT_URL = "https://docs.google.com/spreadsheets/d/102I-kbCfNP4RWKnM7p7tlBKyclSrG1WRJEsl-M3G-Y8/edit?usp=sharing";
-
-        // ตั้งค่าให้ช่อง 'วันที่และเวลา' เป็นเวลาปัจจุบัน
-        window.addEventListener('load', () => {
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('dateTime').value = now.toISOString().slice(0,16);
-        });
-
-        const form = document.getElementById('vendingForm');
-        const submitBtn = document.getElementById('submitBtn');
-
-        form.addEventListener('submit', e => {
-            e.preventDefault(); // ป้องกันไม่ให้หน้าเว็บโหลดใหม่
-
-            // เปลี่ยนสถานะปุ่มเป็นกำลังโหลด
-            submitBtn.classList.add('loading');
-            submitBtn.innerHTML = 'กำลังบันทึกข้อมูล... ⏳';
-
-            // เตรียมข้อมูลจากฟอร์ม
-            let formData = new FormData(form);
-
-            // ยิงข้อมูลไปยัง Google Sheet
-            fetch(SCRIPT_URL, { 
-                method: 'POST', 
-                body: formData,
-                mode: 'no-cors' // สำคัญ: ป้องกัน Error เรื่อง CORS ของ Browser
-            })
+        document.getElementById('dt').value = new Date().toISOString().slice(0,16);
+        document.getElementById('myForm').addEventListener('submit', function(e){
+            e.preventDefault();
+            document.getElementById('btn').innerText = "กำลังบันทึก...";
+            fetch('<?= ScriptApp.getService().getUrl() ?>', {method:'POST', body:new FormData(this)})
             .then(() => {
-                // แจ้งเตือนเมื่อบันทึกสำเร็จ
-                Swal.fire({
-                    icon: 'success',
-                    title: 'บันทึกสำเร็จ!',
-                    text: 'ข้อมูลของคุณถูกบันทึกลง Google Sheet เรียบร้อยแล้ว',
-                    confirmButtonColor: '#4CAF50'
-                });
-                
-                // ล้างค่าในฟอร์มเพื่อเตรียมกรอกใหม่
-                form.reset();
-                
-                // ตั้งค่าเวลาใหม่
-                const now = new Date();
-                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                document.getElementById('dateTime').value = now.toISOString().slice(0,16);
-            })
-            .catch(error => {
-                // แจ้งเตือนเมื่อมีข้อผิดพลาด
-                Swal.fire({
-                    icon: 'error',
-                    title: 'เกิดข้อผิดพลาด',
-                    text: 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง',
-                    confirmButtonColor: '#d33'
-                });
-                console.error('Error!', error.message);
-            })
-            .finally(() => {
-                // คืนสถานะปุ่มกลับมาเป็นปกติ
-                submitBtn.classList.remove('loading');
-                submitBtn.innerHTML = '💾 บันทึกข้อมูล';
+                Swal.fire('สำเร็จ!', 'บันทึกข้อมูลเรียบร้อย', 'success');
+                this.reset();
+                document.getElementById('dt').value = new Date().toISOString().slice(0,16);
+                document.getElementById('btn').innerText = "บันทึก";
             });
         });
     </script>
